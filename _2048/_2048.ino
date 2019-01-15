@@ -2,25 +2,28 @@
 //arduino nano
 //5 push buttons (4 controls + reset)
 
+//библиотеки
 #include <Wire.h>
 #include <Adafruit_SSD1306.h>
 #include <Adafruit_GFX.h>
 
+//пины
 #define UP_BUTTON 6 
 #define DOWN_BUTTON 7
 #define LEFT_BUTTON 8
 #define RIGHT_BUTTON 9
 
+//дисплей
 #define OLED_ADDR   0x3C
 Adafruit_SSD1306 display(-1);
 
+//массив клеток и счет
 int matrix[4][4]= {
   {0, 0, 0, 0},
   {0, 0, 0, 0},
   {0, 0, 0, 0},
   {0, 0, 0, 0}
 };
-
 int SCORE = 0;
 
 
@@ -30,15 +33,16 @@ void setup() {
   delay(2000);
   Serial.println("2048 by Daniil Zhuk");
 
+  //пины
   pinMode(UP_BUTTON, INPUT);
   pinMode(DOWN_BUTTON, INPUT);
   pinMode(LEFT_BUTTON, INPUT);
   pinMode(RIGHT_BUTTON, INPUT);
 
+  //подготовка дисплея
   display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR);
   display.clearDisplay();
   display.display();
-
   display.setTextSize(1);
   display.setTextColor(WHITE);
   display.setCursor(0,0);
@@ -50,6 +54,12 @@ void setup() {
 }
 
 void loop() {
+
+  /*
+    Закомментированная часть кода это код для отладки
+    путём получения направления движения в виде
+    цифры из сериал порта
+  */
   
   // 1 down
   // 2 right
@@ -87,6 +97,8 @@ void loop() {
 //    AfterMove();
 //  }
 
+  //определяем кнопку направления и двигаем в ее сторону
+  //делаем нужные действия после передвжения
   if (digitalRead(UP_BUTTON)==HIGH){
     MoveUp();
     AfterMove();
@@ -112,13 +124,13 @@ void loop() {
   //buttons
 }
 
-
+//создаем рандомно первую плитку
 void StartGame(){
   matrix[random(0,2)][random(0,4)]=2;
-  //matrix[random(2,4)][random(0,4)]=2;
 }
 
 
+//вывод в сериал
 void PrintToSerial(){
   
   for (int i = 0; i<4; i++){
@@ -130,9 +142,9 @@ void PrintToSerial(){
 }
 
 
+//проверка проигрыша
 void LostCheck(){
   
-  //check zeros
   bool lost = true;
   
   for (int i = 0;i<4;i++){
@@ -147,7 +159,7 @@ void LostCheck(){
     RandomElement();
   }
   
-  //check twins
+  
   for (int i = 0;i<3;i++){
     for (int j = 0;j<4;j++){
       if (matrix[i][j]==matrix[i+1][j]){
@@ -175,7 +187,7 @@ void LostCheck(){
 
     display.display();
     
-    //ClearMatrix();
+    
     SCORE = 0;
   } else{
     PrintToDisplay();
@@ -191,10 +203,10 @@ void ClearMatrix(){
   }
 }
 
-
+//проверка выигрыша
 void WinCheck(){
 
-  //win check
+  
   bool win = false;
   for (int i = 0;i<4;i++){
     for (int j = 0;j<4;j++){
@@ -221,10 +233,10 @@ void WinCheck(){
     PrintToDisplay();
   }
 
-  //RandomElement();
+  
 }
 
-
+//спавн двойки в случайном месте
 void RandomElement(){
   
   //random "2" in cell
@@ -244,7 +256,7 @@ void RandomElement(){
   
 }
 
-
+//вывод на экран
 void PrintToDisplay(){
   display.clearDisplay();
 
